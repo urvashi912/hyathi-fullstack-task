@@ -6,6 +6,7 @@ export interface UserDocument {
     password: string;
     name: string;
     image: string;
+    adoptedPokemon:string
     createdAt: Date;
     updatedAt: Date;
   }
@@ -27,7 +28,8 @@ export interface UserDocument {
     name: {
       type: String,
       required: [true, "Name is required"]
-    }
+    },
+    adoptedPokemon: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Pokemon' }],
   },
   {
     timestamps: true,
