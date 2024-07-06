@@ -12,6 +12,8 @@ export const connectDB = async () => {
         console.log("Pokemon does not exists! need to seed.");
         await seedPokemons()
        }
+
+       
       return Promise.resolve(true);
     }
   } catch (error) {

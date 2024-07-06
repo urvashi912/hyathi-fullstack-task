@@ -121,6 +121,40 @@ export default function Page() {
     }
   };
 
+  const handleFeed = async (pokemonId: string) => {
+    if (!session?.user) {
+      alert("You must be signed in to feed a Pokémon");
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/pokemons/${pokemonId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: (session.user as { email: string }).email,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const updatedPokemons = pokemons.map((pokemon) => {
+          if (pokemon._id === pokemonId) {
+            return { ...pokemon, healthStatus: data.healthStatus };
+          }
+          return pokemon;
+        });
+        setPokemons(updatedPokemons);
+      } else {
+        console.error("Failed to feed Pokémon");
+      }
+    } catch (error) {
+      console.error("Error feeding Pokémon:", error);
+    }
+  };
+
   const showSession = () => {
     if (status === "authenticated") {
       return (
@@ -184,20 +218,20 @@ export default function Page() {
               />
               <div className="px-4 py-3 w-72">
                 <span className="text-gray-400 mr-3 uppercase text-xs">
-                  Brand
+                  Pokemon
                 </span>
                 <p className="text-lg font-bold text-black truncate block capitalize">
-                  {pokemon.name}
+                  Name: {pokemon.name}
                 </p>
                 <div className="flex-col items-center">
                   <p className="text-lg font-semibold text-black cursor-auto my-3">
-                    {pokemon.breed}
+                    Breed: {pokemon.breed}
                   </p>
                   <p className="text-lg font-semibold text-black cursor-auto my-3">
-                    {pokemon.age}
+                    Age: {pokemon.age}
                   </p>
                   <p className="text-lg font-semibold text-black cursor-auto my-3">
-                    {pokemon.healthStatus}
+                    Health Status: {pokemon.healthStatus}
                   </p>
                   {pokemon.adoptedBy ? (
                     <p className="text-lg font-semibold text-black cursor-auto my-3">
@@ -212,12 +246,22 @@ export default function Page() {
                     </button>
                   )}
                   {pokemon.adoptedBy && (
-                    <button
-                      className="rounded-lg px-8 py-2 text-xl bg-red-600 text-white hover:bg-red-500 duration-300"
-                      onClick={() => handleUnadopt(pokemon._id)}
-                    >
-                      Unadopt
-                    </button>
+                    // pokemon.adoptedBy === (session?.user as { email: string }).email &&
+                    <>
+                      <button
+                        className="rounded-lg px-8 py-2 text-xl bg-red-600 text-white hover:bg-red-500 duration-300"
+                        onClick={() => handleUnadopt(pokemon._id)}
+                      >
+                        Unadopt
+                      </button>
+
+                      <button
+                        className="rounded-lg px-8 py-2 text-xl bg-green-600 text-white hover:bg-green-500 duration-300 ml-2"
+                        onClick={() => handleFeed(pokemon._id)}
+                      >
+                        Feed
+                      </button>
+                    </>
                   )}
                 </div>
               </div>

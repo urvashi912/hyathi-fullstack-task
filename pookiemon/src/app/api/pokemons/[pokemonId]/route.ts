@@ -82,7 +82,7 @@ export async function DELETE(request: Request, context: { params: Params }) {
 
     // Parse JSON body
     const userId = body.userId;
-    const user = await User.findOne({ email: userId }).lean().exec() as UserDocument | null;;
+    const user = await User.findOne({ email: userId }).lean().exec() as UserDocument | null;
     if (!user) {
       console.log("User not found");
       return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
@@ -116,5 +116,47 @@ export async function DELETE(request: Request, context: { params: Params }) {
   } catch (error: any) {
     console.error("Error unadopting Pokemon:", error);
     return NextResponse.json({ success: false, message: "Failed to unadopt Pokemon", error }, { status: 500 });
+  }
+}
+
+
+export async function PATCH(request: Request, context: { params: Params }) {
+  const pokemonId = context.params.pokemonId;
+  await connectDB();
+
+  try {
+    const body = await request.json();
+
+
+    const userId = body.userId;
+    
+
+    if (!userId) {
+      return NextResponse.json({ success: false, message: "User ID not provided" }, { status: 400 });
+    }
+
+    const user = await User.findOne({ email: userId }).lean().exec();
+    if (!user) {
+      return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
+    }
+
+    const pokemon = await Pokemon.findById(pokemonId);
+    if (!pokemon) {
+      return NextResponse.json({ success: false, message: "Pokemon not found" }, { status: 404 });
+    }
+
+    if (pokemon.adoptedBy?.toString() !== user._id.toString()) {
+      return NextResponse.json({ success: false, message: "You can only feed your adopted Pokémon" }, { status: 403 });
+    }
+
+    pokemon.healthStatus += 5; // Increase health status by 10
+    pokemon.lastFedAt = new Date();
+
+    await pokemon.save();
+
+    return NextResponse.json({ success: true, healthStatus: pokemon.healthStatus }, { status: 200 });
+
+  } catch (error: any) {
+    return NextResponse.json({ success: false, message: "Failed to feed Pokémon", error }, { status: 500 });
   }
 }

@@ -2,8 +2,6 @@
   "name": "pookiemon",
   "version": "0.1.0",
   "private": true,
-
-
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -16,6 +14,7 @@
     "mongoose": "^8.4.4",
     "next": "14.2.3",
     "next-auth": "^4.24.7",
+    "node-cron": "^3.0.3",
     "react": "^18",
     "react-dom": "^18"
   },
