@@ -7,7 +7,7 @@ export interface PokemonModel extends Document {
   breed: string;
   age: number;
   healthStatus: number;
-  adoptedBy?: Schema.Types.ObjectId | null;
+  adoptedBy?:string | mongoose.Schema.Types.ObjectId | null;
   photo?: string; // Add photo field
 }
 
@@ -17,9 +17,9 @@ try {
   Pokemon = mongoose.model('Pokemon') as mongoose.Model<PokemonModel>;
 } catch (error) {
   const PokemonSchema = new Schema<PokemonModel>({
-    name: { type: String, required: true },
-    breed: { type: String, required: true },
-    age: { type: Number, required: true },
+    name: { type: String },
+    breed: { type: String },
+    age: { type: Number},
     healthStatus: { type: Number, default: 100 },
     adoptedBy: { type: Schema.Types.ObjectId, ref: 'User', default: null },
     photo: { type: String, default: 'default.jpg' },

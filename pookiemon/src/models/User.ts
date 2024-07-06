@@ -1,7 +1,7 @@
 import  mongoose, { Schema, model } from  "mongoose";
 
 export interface UserDocument {
-    _id: string;
+    _id: mongoose.Schema.Types.ObjectId;
     email: string;
     password: string;
     name: string;
@@ -9,6 +9,7 @@ export interface UserDocument {
     adoptedPokemon:string
     createdAt: Date;
     updatedAt: Date;
+    id?: string; 
   }
 
   const UserSchema = new Schema<UserDocument>({
@@ -29,7 +30,9 @@ export interface UserDocument {
       type: String,
       required: [true, "Name is required"]
     },
+    
     adoptedPokemon: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Pokemon' }],
+   
   },
   {
     timestamps: true,
