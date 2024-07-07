@@ -12,6 +12,8 @@ interface Pokemon {
   age: number;
   healthStatus: number;
   adoptedBy?: string | null;
+  adopterName?: string | null;
+  adopterEmailId?: string | null | undefined;
 }
 
 export default function Page() {
@@ -69,6 +71,7 @@ export default function Page() {
               ...pokemon,
               adoptedBy: data.adoptedBy,
               adopterName: data.adopterName,
+              adopterEmailId: data.adopterEmailId,
             };
           }
           return pokemon;
@@ -158,16 +161,21 @@ export default function Page() {
   const showSession = () => {
     if (status === "authenticated") {
       return (
-        <button
-          className="border border-solid border-black rounded"
-          onClick={() => {
-            signOut({ redirect: false }).then(() => {
-              router.push("/");
-            });
-          }}
-        >
-          Sign Out
-        </button>
+        <>
+          <button
+            className="border border-solid border-black rounded"
+            onClick={() => {
+              signOut({ redirect: false }).then(() => {
+                router.push("/");
+              });
+            }}
+          >
+            Sign Out
+          </button>
+          <button onClick={() => router.push("/myPokemons")}>
+            My Pokemons
+          </button>
+        </>
       );
     } else if (status === "loading") {
       return <span className="text-[#888] text-sm mt-7">Loading...</span>;
@@ -188,7 +196,7 @@ export default function Page() {
       <h1 className="text-xl">
         {" "}
         {session ? (
-          <p>Welcome, {session.user?.name}</p>
+          <p>Welcome, {session?.user?.name ?? "User"}</p>
         ) : (
           <p>You must be signed in to view this content.</p>
         )}
@@ -235,7 +243,7 @@ export default function Page() {
                   </p>
                   {pokemon.adoptedBy ? (
                     <p className="text-lg font-semibold text-black cursor-auto my-3">
-                      Adopted By: {pokemon.adoptedBy}
+                      Adopted By: {pokemon.adopterName}
                     </p>
                   ) : (
                     <button
@@ -245,24 +253,24 @@ export default function Page() {
                       Adopt Me
                     </button>
                   )}
-                  {pokemon.adoptedBy && (
-                    // pokemon.adoptedBy === (session?.user as { email: string }).email &&
-                    <>
-                      <button
-                        className="rounded-lg px-8 py-2 text-xl bg-red-600 text-white hover:bg-red-500 duration-300"
-                        onClick={() => handleUnadopt(pokemon._id)}
-                      >
-                        Unadopt
-                      </button>
+                  {pokemon.adoptedBy &&
+                    pokemon.adopterEmailId === (session?.user?.email ?? "") && (
+                      <>
+                        <button
+                          className="rounded-lg px-8 py-2 text-xl bg-red-600 text-white hover:bg-red-500 duration-300"
+                          onClick={() => handleUnadopt(pokemon._id)}
+                        >
+                          Unadopt
+                        </button>
 
-                      <button
-                        className="rounded-lg px-8 py-2 text-xl bg-green-600 text-white hover:bg-green-500 duration-300 ml-2"
-                        onClick={() => handleFeed(pokemon._id)}
-                      >
-                        Feed
-                      </button>
-                    </>
-                  )}
+                        <button
+                          className="rounded-lg px-8 py-2 text-xl bg-green-600 text-white hover:bg-green-500 duration-300 ml-2"
+                          onClick={() => handleFeed(pokemon._id)}
+                        >
+                          Feed
+                        </button>
+                      </>
+                    )}
                 </div>
               </div>
             </div>

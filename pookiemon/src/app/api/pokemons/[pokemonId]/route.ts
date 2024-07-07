@@ -4,6 +4,8 @@ import Pokemon from "@/models/Pokemon";
 import mongoose from "mongoose";
 import { NextApiRequest, NextApiResponse } from "next";
 import User, { UserDocument } from "@/models/User";
+import cron from 'node-cron'
+
 
 type Params = {
   pokemonId: string;
@@ -44,6 +46,8 @@ export async function POST(request: Request, context: { params: Params }) {
 
     const adoptedById = user._id as unknown as mongoose.Types.ObjectId;
     const adopterName = user.name;
+    const adopterEmailId = user.email
+    console.log(adopterName, "This is adopted by ")
 
     const pokemon = await Pokemon.findById(pokemonId);
     if (!pokemon) {
@@ -58,12 +62,14 @@ export async function POST(request: Request, context: { params: Params }) {
 
     // Simulate adoption by setting adoptedBy field
     pokemon.adoptedBy = adoptedById;
-    
+    pokemon.adopterName = adopterName;
+    pokemon.adopterEmailId = adopterEmailId
 
+    console.log(`Pokemon adopted by ${adopterName}`);
     await pokemon.save();
 
     console.log("Pokemon adopted successfully by:", adoptedById);
-    return NextResponse.json({ success: true, adoptedBy: adoptedById, adopterName }, { status: 200 });
+    return NextResponse.json({ success: true, adoptedBy: adoptedById, adopterName: adopterName, adopterEmailId: adopterEmailId }, { status: 200 });
 
   } catch (error: any) {
     console.error("Error adopting Pokemon:", error);
@@ -103,7 +109,7 @@ export async function DELETE(request: Request, context: { params: Params }) {
 
     if (pokemon.adoptedBy?.toString() !== adoptedById.toString()) {
       return NextResponse.json({ success: false, message: "You can only unadopt your own adopted Pokemon" }, { status: 403 });
-      
+
     }
 
     pokemon.adoptedBy = null;
@@ -129,7 +135,7 @@ export async function PATCH(request: Request, context: { params: Params }) {
 
 
     const userId = body.userId;
-    
+
 
     if (!userId) {
       return NextResponse.json({ success: false, message: "User ID not provided" }, { status: 400 });
@@ -160,3 +166,5 @@ export async function PATCH(request: Request, context: { params: Params }) {
     return NextResponse.json({ success: false, message: "Failed to feed Pokémon", error }, { status: 500 });
   }
 }
+
+

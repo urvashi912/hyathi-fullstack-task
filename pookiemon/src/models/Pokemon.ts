@@ -10,6 +10,10 @@ export interface PokemonModel extends Document {
   adoptedBy?:string | mongoose.Schema.Types.ObjectId | null;
   photo?: string; // Add photo field
   lastFedAt?: Date;
+  lastHealthCheck?: Date;
+  adopterName?: string;
+  adopterEmailId?: string;
+
 
 }
 
@@ -26,6 +30,10 @@ try {
     adoptedBy: { type: Schema.Types.ObjectId, ref: 'User', default: null },
     photo: { type: String, default: 'default.jpg' },
     lastFedAt: { type: Date, default: Date.now},
+    lastHealthCheck: { type: Date, default: Date.now }, // Add this line
+    adopterName: { type: String, default: null },
+    adopterEmailId:{type: String, default: null}
+    
   });
 
   Pokemon = mongoose.model<PokemonModel>('Pokemon', PokemonSchema);

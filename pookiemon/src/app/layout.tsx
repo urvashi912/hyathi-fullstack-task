@@ -1,7 +1,12 @@
+
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Provider } from  "./provider";
+import { startHealthDecreaseJob } from "@/utility/decreaseHealth";
+import { useEffect } from "react";
+import { start } from "repl";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,10 +20,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  startHealthDecreaseJob()
+
   return (
+    
     <html lang="en">
+      
       <Provider>
       <body className={inter.className}>{children}</body>
+      
       </Provider>
       
     </html>
